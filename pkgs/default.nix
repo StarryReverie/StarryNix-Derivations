@@ -10,7 +10,7 @@ let
     ]
   );
 
-  exportedPackages = import ./by-name/package-set.nix callPackage;
+  exportedPackages = import ./by-name/package-set.nix pkgs callPackage;
 in
 exportedPackages
 
