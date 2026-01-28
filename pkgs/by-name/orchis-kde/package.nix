@@ -66,9 +66,10 @@ stdenvNoCC.mkDerivation {
   '';
 
   meta = {
-    description = " Orchis themes for KDE Plasma ";
+    description = "Orchis themes for KDE Plasma";
     homepage = "https://github.com/vinceliuice/Orchis-kde";
-    license = lib.licenses.gpl3Only;
+    license = lib.licenses.gpl3Plus;
     platforms = lib.platforms.all;
+    maintainers = with lib.maintainers; [ starryreverie ];
   };
 }
