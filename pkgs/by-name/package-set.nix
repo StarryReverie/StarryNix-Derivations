@@ -1,5 +1,5 @@
-callPackage: {
-	cavasik = callPackage ./cavasik/package.nix { };
+rawPkgs: callPackage: {
+	cavasik = rawPkgs.cavasik;
 
 	kvlibadwaita = callPackage ./kvlibadwaita/package.nix { };
 
