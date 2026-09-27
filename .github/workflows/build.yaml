@@ -1,0 +1,117 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  eval:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - system: x86_64-linux
+            runner: ubuntu-latest
+          - system: aarch64-darwin
+            runner: macos-latest
+    runs-on: ${{ matrix.runner }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Install Nix
+        uses: nixbuild/nix-quick-install-action@v35
+
+      - name: Setup Cachix
+        uses: cachix/cachix-action@v17
+        with:
+          name: starrynix-derivations
+          extraPullNames: nix-community
+          skipPush: true
+
+      - name: Evaluate Derivations
+        run: |
+          system="${{ matrix.system }}"
+          all_drvs="$(nix run nixpkgs#nix-eval-jobs -- --flake ".#legacyPackages.${system}" --force-recurse --check-cache-status)"
+          unbuilt_drvs="$(echo "${all_drvs}" | jq --compact-output '
+            select (.cacheStatus == "notBuilt")
+            | {
+              attr,
+              attrPath,
+              system,
+              os: (
+                {
+                  "x86_64-linux": "ubuntu-latest",
+                  "aarch64-darwin": "macos-latest",
+                }
+                [.system]
+              ),
+            }
+          ')"
+          echo "${unbuilt_drvs}" | jq
+          echo "${unbuilt_drvs}" > eval-${{ matrix.system }}
+
+      - name: Upload Evaluation Result
+        uses: actions/upload-artifact@v7
+        with:
+          name: eval-${{ matrix.system }}
+          path: eval-${{ matrix.system }}
+
+  aggregate:
+    needs: eval
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.aggregate.outputs.matrix }}
+
+    steps:
+      - name: Download Per-System Evaluation Results
+        uses: actions/download-artifact@v8
+        with:
+          pattern: eval-*
+          merge-multiple: true
+          path: eval-results
+
+      - name: Aggregate Evaluation Results
+        id: aggregate
+        run: |
+          concat_drvs="$(cat eval-results/* | jq --slurp --compact-output)"
+          echo "${concat_drvs}" | jq
+          echo "matrix=${concat_drvs}" >> ${GITHUB_OUTPUT}
+
+  build:
+    needs: aggregate
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.aggregate.outputs.matrix) }}
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Install Nix
+        uses: nixbuild/nix-quick-install-action@v35
+
+      - name: Setup Cachix
+        uses: cachix/cachix-action@v17
+        with:
+          name: starrynix-derivations
+          extraPullNames: nix-community
+          skipPush: ${{ github.ref != 'refs/heads/main' }}
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+
+      - name: Build Derivation ${{ matrix.attr }}
+        run: |
+          nix build ".#legacyPackages.${{ matrix.system }}.${{ matrix.attr }}" -L --print-out-paths
