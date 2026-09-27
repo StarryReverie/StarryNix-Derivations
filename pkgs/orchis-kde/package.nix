@@ -7,8 +7,11 @@
   kdePackages,
 }:
 stdenvNoCC.mkDerivation {
-  pname = "orchis";
+  pname = "orchis-kde";
   version = "0-unstable-2025-10-18";
+
+  __structuredAttrs = true;
+  strictDeps = true;
 
   src = fetchFromGitHub {
     owner = "vinceliuice";

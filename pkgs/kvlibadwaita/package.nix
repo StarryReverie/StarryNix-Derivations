@@ -7,6 +7,9 @@ stdenvNoCC.mkDerivation {
   pname = "kvlibadwaita";
   version = "0-unstable-2025-09-13";
 
+  __structuredAttrs = true;
+  strictDeps = true;
+
   src = fetchFromGitHub {
     owner = "GabePoel";
     repo = "KvLibadwaita";
