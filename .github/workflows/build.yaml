@@ -87,7 +87,22 @@ jobs:
         run: |
           concat_drvs="$(cat eval-results/* | jq --slurp --compact-output)"
           echo "${concat_drvs}" | jq
-          echo "matrix=${concat_drvs}" >> ${GITHUB_OUTPUT}
+
+          # GHA requires that at least one entry is presented in the matrix.
+          matrix="$(echo "${concat_drvs}" | jq --compact-output '
+            if length == 0 then
+              [{
+                attr: "__skip_build",
+                attrPath: ["__skip_build"],
+                system: "x86_64-linux",
+                os: "ubuntu-latest",
+                skip: true
+              }]
+            else
+              map(. + { skip: false })
+            end
+          ')"
+          echo "matrix=${matrix}" >> ${GITHUB_OUTPUT}
 
   build:
     needs: aggregate
@@ -99,12 +114,15 @@ jobs:
 
     steps:
       - name: Checkout Repository
+        if: ${{ !matrix.skip }}
         uses: actions/checkout@v7
 
       - name: Install Nix
+        if: ${{ !matrix.skip }}
         uses: nixbuild/nix-quick-install-action@v35
 
       - name: Setup Cachix
+        if: ${{ !matrix.skip }}
         uses: cachix/cachix-action@v17
         with:
           name: starrynix-derivations
@@ -113,5 +131,6 @@ jobs:
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
       - name: Build Derivation ${{ matrix.attr }}
+        if: ${{ !matrix.skip }}
         run: |
           nix build ".#legacyPackages.${{ matrix.system }}.${{ matrix.attr }}" -L --print-out-paths
