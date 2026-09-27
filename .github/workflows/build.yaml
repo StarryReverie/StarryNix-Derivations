@@ -123,10 +123,17 @@ jobs:
         with:
           name: starrynix-derivations
           extraPullNames: nix-community
-          skipPush: ${{ github.ref != 'refs/heads/main' }}
+          skipPush: true
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
       - name: Build Derivation ${{ matrix.attr }}
         if: ${{ !matrix.skip }}
         run: |
-          nix build ".#legacyPackages.${{ matrix.system }}.${{ matrix.attr }}" -L --print-out-paths
+          out_paths="$(nix build '.#legacyPackages.${{ matrix.system }}.${{ matrix.attr }}' -L --print-out-paths)"
+          if [[ "$?" -eq 0 ]]; then
+            echo "${out_paths}"
+            if [[ '${{ github.ref == 'refs/heads/main' }}' == 'true' ]]; then
+              echo "${out_paths}" | cachix push starrynix-derivations
+            fi
+          fi
+
