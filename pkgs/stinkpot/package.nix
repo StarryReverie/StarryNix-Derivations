@@ -7,6 +7,9 @@ buildGoModule (finalAttrs: {
   pname = "stinkpot";
   version = "0.1.0-unstable-2026-09-16";
 
+  __structuredAttrs = true;
+  strictDeps = true;
+
   src = fetchurl {
     url = "https://tangled.org/oppi.li/stinkpot/archive/71ecf8b2ebcb0a0509040fba7622205ea243627a.tar.gz";
     hash = "sha256-D7swmsd9cRY9bkYUdbbhDQFOElqd84PQfgIeW0WAzSM=";
