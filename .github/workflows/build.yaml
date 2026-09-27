@@ -45,7 +45,6 @@ jobs:
       - name: Evaluate Derivations
         run: |
           system="${{ matrix.system }}"
-          os="${{ matrix.os }}"
           all_drvs="$(nix run nixpkgs#nix-eval-jobs -- --flake ".#legacyPackages.${system}" --force-recurse --check-cache-status)"
           unbuilt_drvs="$(echo "${all_drvs}" | jq --compact-output '
             select (.cacheStatus == "notBuilt")
@@ -53,7 +52,7 @@ jobs:
               attr,
               attrPath,
               system,
-              os: ${os},
+              os: "${{ matrix.os }}",
             }
           ')"
           echo "${unbuilt_drvs}" | jq
