@@ -22,6 +22,8 @@ jobs:
         include:
           - system: x86_64-linux
             runner: ubuntu-latest
+          - system: aarch64-linux
+            runner: ubuntu-26.04-arm
           - system: aarch64-darwin
             runner: macos-latest
     runs-on: ${{ matrix.runner }}
@@ -43,6 +45,7 @@ jobs:
       - name: Evaluate Derivations
         run: |
           system="${{ matrix.system }}"
+          os="${{ matrix.os }}"
           all_drvs="$(nix run nixpkgs#nix-eval-jobs -- --flake ".#legacyPackages.${system}" --force-recurse --check-cache-status)"
           unbuilt_drvs="$(echo "${all_drvs}" | jq --compact-output '
             select (.cacheStatus == "notBuilt")
@@ -50,13 +53,7 @@ jobs:
               attr,
               attrPath,
               system,
-              os: (
-                {
-                  "x86_64-linux": "ubuntu-latest",
-                  "aarch64-darwin": "macos-latest",
-                }
-                [.system]
-              ),
+              os: ${os},
             }
           ')"
           echo "${unbuilt_drvs}" | jq
