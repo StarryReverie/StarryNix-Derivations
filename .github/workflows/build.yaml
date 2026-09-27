@@ -109,7 +109,6 @@ jobs:
         with:
           name: starrynix-derivations
           extraPullNames: nix-community
-          skipPush: ${{ github.ref != 'refs/heads/main' }}
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
       - name: Build Derivation ${{ matrix.attr }}
