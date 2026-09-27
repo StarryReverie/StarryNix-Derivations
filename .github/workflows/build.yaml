@@ -52,7 +52,7 @@ jobs:
               attr,
               attrPath,
               system,
-              os: "${{ matrix.os }}",
+              os: "${{ matrix.runner }}",
             }
           ')"
           echo "${unbuilt_drvs}" | jq
