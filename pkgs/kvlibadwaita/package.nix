@@ -27,6 +27,6 @@ stdenvNoCC.mkDerivation {
     homepage = "https://github.com/GabePoel/KvLibadwaita";
     license = lib.licenses.gpl3Plus;
     platforms = lib.platforms.all;
-    maintainers = with lib.maintainers; [ starryreverie ];
+    maintainers = [ lib.maintainers.starryreverie ];
   };
 }
