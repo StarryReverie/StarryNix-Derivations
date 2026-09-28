@@ -73,6 +73,6 @@ stdenvNoCC.mkDerivation {
     homepage = "https://github.com/vinceliuice/Orchis-kde";
     license = lib.licenses.gpl3Plus;
     platforms = lib.platforms.linux;
-    maintainers = with lib.maintainers; [ starryreverie ];
+    maintainers = [ lib.maintainers.starryreverie ];
   };
 }

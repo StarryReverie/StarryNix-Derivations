@@ -28,6 +28,6 @@ buildGoModule (finalAttrs: {
     mainProgram = "stinkpot";
     license = lib.licenses.mit;
     platforms = lib.platforms.unix;
-    maintainers = with lib.maintainers; [ starryreverie ];
+    maintainers = [ lib.maintainers.starryreverie ];
   };
 })
