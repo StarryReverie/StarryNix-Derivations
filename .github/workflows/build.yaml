@@ -21,12 +21,12 @@ jobs:
       matrix:
         include:
           - system: x86_64-linux
-            runner: ubuntu-latest
+            os: ubuntu-latest
           - system: aarch64-linux
-            runner: ubuntu-26.04-arm
+            os: ubuntu-26.04-arm
           - system: aarch64-darwin
-            runner: macos-latest
-    runs-on: ${{ matrix.runner }}
+            os: macos-latest
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout Repository
@@ -44,15 +44,14 @@ jobs:
 
       - name: Evaluate Derivations
         run: |
-          system="${{ matrix.system }}"
-          all_drvs="$(nix run nixpkgs#nix-eval-jobs -- --flake ".#legacyPackages.${system}" --force-recurse --check-cache-status)"
+          all_drvs="$(nix run nixpkgs#nix-eval-jobs -- --flake '.#ciPackages.${{ matrix.system }}.active' --force-recurse --check-cache-status)"
           unbuilt_drvs="$(echo "${all_drvs}" | jq --compact-output '
             select (.cacheStatus == "notBuilt")
             | {
               attr,
               attrPath,
               system,
-              os: "${{ matrix.runner }}",
+              os: "${{ matrix.os }}",
             }
           ')"
           echo "${unbuilt_drvs}" | jq
@@ -129,7 +128,7 @@ jobs:
       - name: Build Derivation ${{ matrix.attr }}
         if: ${{ !matrix.skip }}
         run: |
-          out_paths="$(nix build '.#legacyPackages.${{ matrix.system }}.${{ matrix.attr }}' -L --print-out-paths)"
+          out_paths="$(nix build '.#ciPackages.${{ matrix.system }}.active.${{ matrix.attr }}' -L --print-out-paths)"
           if [[ "$?" -eq 0 ]]; then
             echo "${out_paths}"
             if [[ '${{ github.ref == 'refs/heads/main' }}' == 'true' ]]; then
