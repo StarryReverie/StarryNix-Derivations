@@ -50,6 +50,7 @@ jobs:
             | {
               attr,
               attrPath,
+              outPaths: [.outputs[]],
               system,
               os: "${{ matrix.os }}",
             }
@@ -89,6 +90,7 @@ jobs:
               [{
                 attr: "__skip_build",
                 attrPath: ["__skip_build"],
+                outPaths: [],
                 system: "x86_64-linux",
                 os: "ubuntu-latest",
                 skip: true
@@ -128,8 +130,9 @@ jobs:
       - name: Build Derivation ${{ matrix.attr }}
         if: ${{ !matrix.skip }}
         run: |
-          out_paths="$(nix build '.#ciPackages.${{ matrix.system }}.active.${{ matrix.attr }}' -L --print-out-paths)"
+          nix build '.#ciPackages.${{ matrix.system }}.active.${{ matrix.attr }}' --print-build-logs
           if [[ "$?" -eq 0 ]]; then
+            out_paths=$(echo '${{ toJson(matrix.outPaths) }}' | jq --raw-output '.[]')
             echo "${out_paths}"
             if [[ '${{ github.ref == 'refs/heads/main' }}' == 'true' ]]; then
               echo "${out_paths}" | cachix push starrynix-derivations
