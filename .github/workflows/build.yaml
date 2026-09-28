@@ -107,6 +107,7 @@ jobs:
       fail-fast: false
       matrix:
         include: ${{ fromJson(needs.aggregate.outputs.matrix) }}
+    name: build (${{ matrix.attr }}, ${{ matrix.system }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
 
     steps:
