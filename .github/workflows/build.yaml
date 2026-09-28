@@ -45,7 +45,7 @@ jobs:
       - name: Evaluate Derivations
         run: |
           system="${{ matrix.system }}"
-          all_drvs="$(nix run nixpkgs#nix-eval-jobs -- --flake ".#legacyPackages.${system}" --force-recurse --check-cache-status)"
+          all_drvs="$(nix run nixpkgs#nix-eval-jobs -- --flake ".#ciPackages.${system}.active" --force-recurse --check-cache-status)"
           unbuilt_drvs="$(echo "${all_drvs}" | jq --compact-output '
             select (.cacheStatus == "notBuilt")
             | {
@@ -129,7 +129,7 @@ jobs:
       - name: Build Derivation ${{ matrix.attr }}
         if: ${{ !matrix.skip }}
         run: |
-          out_paths="$(nix build '.#legacyPackages.${{ matrix.system }}.${{ matrix.attr }}' -L --print-out-paths)"
+          out_paths="$(nix build '.#ciPackages.${{ matrix.system }}.active.${{ matrix.attr }}' -L --print-out-paths)"
           if [[ "$?" -eq 0 ]]; then
             echo "${out_paths}"
             if [[ '${{ github.ref == 'refs/heads/main' }}' == 'true' ]]; then
