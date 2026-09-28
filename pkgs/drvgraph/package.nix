@@ -23,5 +23,9 @@ haskell.lib.justStaticExecutables (
       platforms = lib.platforms.unix;
       maintainers = [ lib.maintainers.starryreverie ];
     };
+
+    passthru = (old.passthru or { }) // {
+      updateScript = ./update.sh;
+    };
   })
 )
