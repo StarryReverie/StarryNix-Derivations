@@ -16,6 +16,9 @@ let
 in
 haskell.lib.justStaticExecutables (
   drv.overrideAttrs (old: {
+    __structuredAttrs = true;
+    strictDeps = true;
+
     meta = old.meta // {
       description = "Traverse and analyze the dependency graph of a Nix package";
       homepage = "https://github.com/StarryReverie/DrvGraph";
