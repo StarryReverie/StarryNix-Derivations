@@ -1,13 +1,8 @@
-{
-  system ? builtins.currentSystem,
-  lib ? (import ../.).inputs.nixpkgs.lib,
-  scope ? import ../pkgs/default.nix { inherit system; },
-}:
+{ lib }:
 let
-  filterPackages = import ./lib/filter-packages.nix { inherit lib; };
-
-  drvPred =
-    drv:
+  # Default predicate for filtering derivations that needn't to be built.
+  defaultDrvPredicate = # ... -> Bool
+    drv: # Derivation
     let
       isBuildable =
         drv:
@@ -19,6 +14,10 @@ let
 
       isCacheable = drv: !(drv.preferLocalBuild or false);
     in
-    lib.isDerivation drv -> isBuildable drv && isCacheable drv;
+    isBuildable drv && isCacheable drv;
 in
-filterPackages drvPred scope
+{
+  inherit
+    defaultDrvPredicate
+    ;
+}

@@ -1,6 +1,7 @@
 { lib, inputs, ... }:
 {
   imports = [
+    ./ci-metadata.nix
     ./packages.nix
   ];
 
