@@ -44,7 +44,7 @@ jobs:
 
       - name: Evaluate Derivations
         run: |
-          all_drvs="$(nix run nixpkgs#nix-eval-jobs -- --flake '.#ciPackages.${{ matrix.system }}.active' --force-recurse --check-cache-status)"
+          all_drvs="$(nix run nixpkgs#nix-eval-jobs -- --flake '.#ciMetadata.${{ matrix.system }}.buildJobPackages' --force-recurse --check-cache-status)"
           unbuilt_drvs="$(echo "${all_drvs}" | jq --compact-output '
             select (.cacheStatus == "notBuilt")
             | {
@@ -131,7 +131,7 @@ jobs:
       - name: Build Derivation ${{ matrix.attr }}
         if: ${{ !matrix.skip }}
         run: |
-          nix build '.#ciPackages.${{ matrix.system }}.active.${{ matrix.attr }}' --print-build-logs
+          nix build '.#ciMetadata.${{ matrix.system }}.buildJobPackages.${{ matrix.attr }}' --print-build-logs
           if [[ "$?" -eq 0 ]]; then
             out_paths=$(echo '${{ toJson(matrix.outPaths) }}' | jq --raw-output '.[]')
             echo "${out_paths}"

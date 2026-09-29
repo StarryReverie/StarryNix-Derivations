@@ -9,16 +9,15 @@ let
     ;
   inherit (import ./lib/eval-jobs.nix { inherit lib; })
     evalJobSet
-    evalJobList
     ;
 in
 let
   # Package set of all buildable derivations.
-  active = # AttrSet
+  buildJobPackages = # AttrSet
     evalJobSet defaultDrvPredicate (path: lib.id) scope;
 in
 {
   inherit
-    active
+    buildJobPackages
     ;
 }
