@@ -7,6 +7,9 @@ rustPlatform.buildRustPackage (finalAttrs: {
   pname = "nmlinkd";
   version = "0.4.0";
 
+  __structuredAttrs = true;
+  strictDeps = true;
+
   src = fetchFromGitHub {
     owner = "SubZ69";
     repo = "nmlinkd";
