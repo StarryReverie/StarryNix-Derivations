@@ -4,6 +4,6 @@
   scope ? import ../pkgs/default.nix { inherit system; },
 }:
 let
-  filterPackages = import ./lib/filter-packages.nix { inherit lib scope; };
+  filterPackages = import ./lib/filter-packages.nix { inherit lib; };
 in
-filterPackages (lib.const true)
+filterPackages (lib.const true) scope

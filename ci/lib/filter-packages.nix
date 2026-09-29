@@ -1,12 +1,9 @@
-{
-  lib,
-  scope,
-}:
+{ lib }:
 let
   isNotEmpty = value: value != null && value != { };
 in
-drvPred:
-lib.pipe scope [
+drvPred: packageSet:
+lib.pipe packageSet [
   (lib.attrsets.mapAttrsRecursiveCond (attrs: !(lib.isDerivation attrs)) (
     path: value: if lib.isDerivation value then value else null
   ))

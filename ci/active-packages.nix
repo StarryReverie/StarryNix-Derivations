@@ -4,7 +4,7 @@
   scope ? import ../pkgs/default.nix { inherit system; },
 }:
 let
-  filterPackages = import ./lib/filter-packages.nix { inherit lib scope; };
+  filterPackages = import ./lib/filter-packages.nix { inherit lib; };
 
   drvPred =
     drv:
@@ -21,4 +21,4 @@ let
     in
     lib.isDerivation drv -> isBuildable drv && isCacheable drv;
 in
-filterPackages drvPred
+filterPackages drvPred scope
