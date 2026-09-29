@@ -25,16 +25,9 @@
 
       legacyPackages = import ../../pkgs { inherit pkgs; };
 
-      ciPackages = {
-        all = import ../../ci/all-packages.nix {
-          inherit lib;
-          scope = config.legacyPackages;
-        };
-
-        active = import ../../ci/active-packages.nix {
-          inherit lib;
-          scope = config.legacyPackages;
-        };
+      ciPackages = import ../../ci/top-level.nix {
+        inherit lib;
+        scope = config.legacyPackages;
       };
     };
 }
