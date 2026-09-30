@@ -1,11 +1,10 @@
-#!/usr/bin/env nix-shell
-#! nix-shell -i bash -p cabal2nix hpack jq curl git nixfmt
-
 set -euo pipefail
 
-pkgdir=$(cd -- "$(dirname -- "$(realpath "$0")")" && pwd)
-
-old_version=$(sed -nE 's/^[[:space:]]*version = "([^"]*)";/\1/p' "${pkgdir}/generated.nix")
+project_root="$PWD"
+while [[ ! -f "$project_root/flake.nix" && "$project_root" != "/" ]]; do
+  project_root="$(dirname "$project_root")"
+done
+pkgdir="$project_root/pkgs/drvgraph"
 
 owner="StarryReverie"
 repo="DrvGraph"
@@ -47,8 +46,3 @@ cat > "${pkgdir}/sources.json" <<EOF
   "hash": "${hash}"
 }
 EOF
-
-nixfmt "${pkgdir}/generated.nix"
-
-git -C "${pkgdir}" add .
-git -C "${pkgdir}" commit -m "pkgs/drvgraph: ${old_version} -> ${version}" .

@@ -1,8 +1,13 @@
 {
+  cabal2nix,
+  curl,
   fetchurl,
   haskell,
   haskellPackages,
+  hpack,
+  jq,
   lib,
+  updateUtils,
 }:
 let
   sources = builtins.fromJSON (builtins.readFile ./sources.json);
@@ -28,7 +33,23 @@ haskell.lib.justStaticExecutables (
     };
 
     passthru = (old.passthru or { }) // {
-      updateScript = ./update.sh;
+      updateScript =
+        let
+          baseUpdater = updateUtils.updateCustom {
+            attrPath = [ "drvgraph" ];
+            scriptFile = ./update.sh;
+            extraRuntimeInputs = [
+              cabal2nix
+              hpack
+              jq
+              curl
+            ];
+          };
+        in
+        lib.pipe baseUpdater [
+          updateUtils.withFormatter
+          updateUtils.withGitCommit
+        ];
     };
   })
 )
