@@ -2,6 +2,7 @@
   fetchFromGitHub,
   lib,
   rustPlatform,
+  updateUtils,
 }:
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "nmlinkd";
@@ -18,6 +19,17 @@ rustPlatform.buildRustPackage (finalAttrs: {
   };
 
   cargoHash = "sha256-5prZ1Jm/7QIQVB7XHV+2USvACz69fcKm0w0DeqioTxk=";
+
+  passthru.updateScript =
+    let
+      baseUpdater = updateUtils.updateAuto {
+        attrPath = [ "nmlinkd" ];
+      };
+    in
+    lib.pipe baseUpdater [
+      updateUtils.withFormatter
+      updateUtils.withGitCommit
+    ];
 
   meta = {
     description = "Native GNOME/KDE network indicator for systemd-networkd, iwd, dhcpcd.";
