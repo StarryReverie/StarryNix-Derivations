@@ -4,6 +4,7 @@
   lib,
   makeWrapper,
   rustPlatform,
+  updateUtils,
 }:
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "nclock-screensaver";
@@ -34,6 +35,18 @@ rustPlatform.buildRustPackage (finalAttrs: {
       wrapProgram $out/bin/nclock-screensaver \
         --prefix PATH : ${lib.makeBinPath [ background ]}
     '';
+
+  passthru.updateScript =
+    let
+      baseUpdater = updateUtils.updateAuto {
+        attrPath = [ "nclock-screensaver" ];
+        branch = "main";
+      };
+    in
+    lib.pipe baseUpdater [
+      updateUtils.withFormatter
+      updateUtils.withGitCommit
+    ];
 
   meta = {
     description = "Screensaver adapter and management process of night clock wallpaper engine";
