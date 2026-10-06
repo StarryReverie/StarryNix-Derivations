@@ -21,7 +21,7 @@
   perSystem =
     { config, pkgs, ... }:
     {
-      ciMetadata = import ../../ci/top-level.nix {
+      ciMetadata = import ../ci/top-level.nix {
         inherit lib;
         scope = config.legacyPackages;
       };
