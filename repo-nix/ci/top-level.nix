@@ -1,7 +1,7 @@
 {
   system ? builtins.currentSystem,
-  lib ? (import ../.).inputs.nixpkgs.lib,
-  scope ? import ../pkgs/default.nix { inherit system; },
+  lib ? (import ../../.).inputs.nixpkgs.lib,
+  scope ? import ../../pkgs/default.nix { inherit system; },
 }:
 let
   inherit (import ./lib/drv-predicate.nix { inherit lib; })
