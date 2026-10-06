@@ -19,8 +19,11 @@ let
       let
         isNotEmpty = value != null && value != { };
         isValidDrv = lib.isDerivation value && drvPred value;
+
+        addJobMetadataTag =
+          value: if builtins.isAttrs value then value // { customType = "jobMetadata"; } else value;
       in
-      optionalNullable (isNotEmpty && isValidDrv) (toJobMetadata path value)
+      optionalNullable (isNotEmpty && isValidDrv) (addJobMetadataTag (toJobMetadata path value))
     ) packageSet;
 
   # Selectively retrieve packages with some metadata and filter out non-derivation elements using a
@@ -33,12 +36,12 @@ let
       flattenImpl =
         value:
         if lib.isAttrs value then
-          if value.type or "" == "jobMetadata" then
+          if value.customType or "" == "jobMetadata" then
             [ value ]
           else
             lib.lists.concatMap flattenImpl (lib.attrsets.attrValues value)
         else
-          [ ];
+          [ value ];
     in
     flattenImpl (evalJobSet drvPred toJobMetadata packageSet);
 in

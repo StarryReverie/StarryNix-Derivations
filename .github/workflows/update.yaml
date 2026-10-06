@@ -1,0 +1,108 @@
+name: Update
+
+on:
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.dispatch.outputs.matrix }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install Nix
+        uses: nixbuild/nix-quick-install-action@9f63be77f412a248c9d9a65a4c82cf066cdf8f0c # v35
+
+      - name: Evaluate Update Script List
+        id: dispatch
+        run: |
+          all_scripts="$(nix --extra-experimental-features 'nix-command flakes' \
+            eval .#ciMetadata.x86_64-linux.updateScripts --json)"
+          all_script_attr_paths="$(echo "${all_scripts}" | jq --compact-output '
+            map({
+              attr,
+              attrPath,
+              system: "x86_64-linux",
+              os: "ubuntu-latest",
+            })
+          ')"
+          echo "${all_script_attr_paths}" | jq
+
+          # GHA requires that at least one entry is presented in the matrix.
+          matrix="$(echo "${all_script_attr_paths}" | jq --compact-output '
+            if length == 0 then
+              [{
+                attr: "__skip_build",
+                attrPath: ["__skip_build"],
+                system: "x86_64-linux",
+                os: "ubuntu-latest",
+                skip: true,
+              }]
+            else
+              map(. + { skip: false })
+            end
+          ')"
+          echo "matrix=${matrix}" >> ${GITHUB_OUTPUT}
+
+  update:
+    needs: dispatch
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.dispatch.outputs.matrix) }}
+    name: update (${{ matrix.attr }}, ${{ matrix.system }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout Repository
+        if: ${{ !matrix.skip }}
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install Nix
+        if: ${{ !matrix.skip }}
+        uses: nixbuild/nix-quick-install-action@9f63be77f412a248c9d9a65a4c82cf066cdf8f0c # v35
+
+      - name: Run Update Script
+        if: ${{ !matrix.skip }}
+        id: update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          current_rev="$(git rev-parse HEAD)"
+          nix --extra-experimental-features 'nix-command flakes' \
+            run '.#legacyPackages.${{ matrix.system }}.${{ matrix.attr }}.updateScript'
+          new_rev="$(git rev-parse HEAD)"
+
+          if [[ "${current_rev}" != "${new_rev}" ]]; then
+            echo 'changed=true' >> ${GITHUB_OUTPUT}
+            echo "title=$(git log -1 --pretty=%s)" >> ${GITHUB_OUTPUT}
+          else
+            echo 'changed=false' >> ${GITHUB_OUTPUT}
+          fi
+
+      - name: Create Update PR
+        if: ${{ !matrix.skip && steps.update.outputs.changed == 'true' }}
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.UPDATE_WORKFLOW_TOKEN }}
+          base: main
+          branch: update-${{ matrix.attr }}
+          title: ${{ steps.update.outputs.title }}
