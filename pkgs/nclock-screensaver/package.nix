@@ -8,16 +8,16 @@
 }:
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "nclock-screensaver";
-  version = "0-unstable-2026-06-13";
+  version = "0-unstable-2026-10-07";
 
   src = fetchFromGitHub {
     owner = "StarryReverie";
     repo = "nclock-background";
-    rev = "b4b0a71b95795244f21d9d967c899667916dba99";
-    hash = "sha256-EJX/RP1QSqbykrrp6hwu5WYWuc8SQ7Xo18+p6zOp6Jc=";
+    rev = "3cc77cf69255e1599481e4219318b78514b2751f";
+    hash = "sha256-cz688V0yrvKi/1zS123xgEoZ2HDTPwr1eyAOhnaIYNQ=";
   };
 
-  cargoHash = "sha256-cLsWniXZWyvzp05vKSedg5w/CLS5EeUzuH/1n26Mse8=";
+  cargoHash = "sha256-adkK11EWRyM8CwzTFQnn0n3jMPdYiYBSWcEYQ5TNSKw=";
 
   buildAndTestSubdir = [ "crates/nclock-screensaver" ];
 
