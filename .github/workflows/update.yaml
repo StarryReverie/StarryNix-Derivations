@@ -4,6 +4,7 @@ on:
   schedule:
     - cron: '0 8 * * *'
   workflow_dispatch:
+  pull_request:
 
 concurrency:
   group: ${{ github.workflow }}
@@ -89,6 +90,9 @@ jobs:
           current_rev="$(git rev-parse HEAD)"
           nix --extra-experimental-features 'nix-command flakes' \
             run '.#legacyPackages.${{ matrix.system }}.${{ matrix.attr }}.updateScript'
+          touch a
+          git add a
+          git commit -m "a"
           new_rev="$(git rev-parse HEAD)"
 
           if [[ "${current_rev}" != "${new_rev}" ]]; then
@@ -97,6 +101,7 @@ jobs:
           else
             echo 'changed=false' >> ${GITHUB_OUTPUT}
           fi
+
 
       - name: Generate Token
         id: generate-token
@@ -109,7 +114,8 @@ jobs:
         if: ${{ !matrix.skip && steps.update.outputs.changed == 'true' }}
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8
         with:
-          token: ${{ steps.generate-token.outputs.token }}
+          # token: ${{ steps.generate-token.outputs.token }}
+          token: ${{ secrets.UPDATE_WORKFLOW_TOKEN }}
           base: main
           branch: update-${{ matrix.attr }}
           title: ${{ steps.update.outputs.title }}
