@@ -99,10 +99,27 @@ jobs:
           fi
 
       - name: Create Update PR
-        if: ${{ !matrix.skip && steps.update.outputs.changed == 'true' }}
+        if: |
+          ${{
+            !matrix.skip
+            && steps.update.outputs.changed == 'true'
+          }}
+        id: create-pr
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8
         with:
           token: ${{ secrets.UPDATE_WORKFLOW_TOKEN }}
           base: main
           branch: update-${{ matrix.attr }}
           title: ${{ steps.update.outputs.title }}
+
+      - name: Enable Auto-merge for Update PR
+        if: |
+          ${{
+            !matrix.skip
+            && steps.update.outputs.changed == 'true'
+            && steps.create-pr.outputs.pull-request-operation == 'created'
+          }}
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          token: ${{ secrets.UPDATE_WORKFLOW_TOKEN }}
+          pull-request-number: ${{ steps.create-pr.outputs.pull-request-number }}
