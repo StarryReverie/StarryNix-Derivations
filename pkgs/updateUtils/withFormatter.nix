@@ -3,7 +3,6 @@
   nixfmt,
   writeShellApplication,
 }:
-
 innerUpdater: # Derivation | Derivation of the underlying updater script.
 let
   inherit (innerUpdater.updateUtilsMeta) attrPath;

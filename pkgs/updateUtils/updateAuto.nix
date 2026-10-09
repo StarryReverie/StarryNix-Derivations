@@ -4,7 +4,6 @@
   writeShellApplication,
   stdenvNoCC,
 }:
-
 {
   attrPath, # [String] | Path to the target derivation in the package set.
   branch ? null, # Nullable String | The optional unstable branch to track.

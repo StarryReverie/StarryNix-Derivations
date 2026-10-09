@@ -4,7 +4,6 @@
   writeShellApplication,
   stdenvNoCC,
 }:
-
 {
   attrPath, # [String] | Path to the target derivation in the package set.
   scriptFile, # Path | Path to the custom update script.
