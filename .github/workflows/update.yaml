@@ -119,7 +119,7 @@ jobs:
             && steps.update.outputs.changed == 'true'
             && steps.create-pr.outputs.pull-request-operation == 'created'
           }}
-        uses: peter-evans/enable-pull-request-automerge@v3
+        uses: peter-evans/enable-pull-request-automerge@a660677d5469627102a1c1e11409dd063606628d # v3
         with:
           token: ${{ secrets.UPDATE_WORKFLOW_TOKEN }}
           pull-request-number: ${{ steps.create-pr.outputs.pull-request-number }}
