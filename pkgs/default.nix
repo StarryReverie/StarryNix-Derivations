@@ -43,7 +43,11 @@ let
     in
     scope;
 
-  packageSetRecursiveWithPred = includePred: packageSetRecursiveImpl includePred pkgs.newScope;
+  packageSetRecursiveWithPred =
+    let
+      pkgsWithOriginal = pkgs.extend (final: prev: { pkgsOriginal = pkgs; });
+    in
+    includePred: packageSetRecursiveImpl includePred pkgsWithOriginal.newScope;
 
   packageSetRecursive = packageSetRecursiveWithPred (entry: entry != "default.nix");
 in
