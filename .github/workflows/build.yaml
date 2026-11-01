@@ -140,3 +140,14 @@ jobs:
             fi
           fi
 
+  check-build:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ensure All Builds Succeeded
+        run: |
+          if [[ "${{ needs.build.result }}" != "success" ]]; then
+            echo "Some builds failed"
+            exit 1
+          fi
