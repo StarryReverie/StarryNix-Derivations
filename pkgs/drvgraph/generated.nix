@@ -34,7 +34,7 @@
 }:
 mkDerivation {
   pname = "drvgraph";
-  version = "0.1.0.0-unstable-2026-10-19";
+  version = "0.1.0.0-unstable-2026-11-02";
   src = src;
   postUnpack = "sourceRoot+=/hs-packages/drvgraph/; echo source root reset to $sourceRoot";
   isLibrary = true;
