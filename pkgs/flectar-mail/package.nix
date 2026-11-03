@@ -72,6 +72,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     let
       baseUpdater = updateUtils.updateAuto {
         attrPath = [ "flectar-mail" ];
+        extraArgs = [ "--version=unstable" ];
       };
     in
     lib.pipe baseUpdater [
