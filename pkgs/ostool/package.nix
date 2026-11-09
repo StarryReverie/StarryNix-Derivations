@@ -1,4 +1,5 @@
 {
+  aws-lc,
   fetchFromGitHub,
   lib,
   makeWrapper,
@@ -32,6 +33,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
   ];
 
   buildInputs = [
+    aws-lc
     udev.dev
   ];
 
