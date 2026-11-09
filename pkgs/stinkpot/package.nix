@@ -1,6 +1,6 @@
 {
   buildGoModule,
-  fetchurl,
+  fetchFromTangled,
   lib,
 }:
 buildGoModule (finalAttrs: {
@@ -10,9 +10,10 @@ buildGoModule (finalAttrs: {
   __structuredAttrs = true;
   strictDeps = true;
 
-  src = fetchurl {
-    url = "https://tangled.org/oppi.li/stinkpot/archive/71ecf8b2ebcb0a0509040fba7622205ea243627a.tar.gz";
-    hash = "sha256-D7swmsd9cRY9bkYUdbbhDQFOElqd84PQfgIeW0WAzSM=";
+  src = fetchFromTangled {
+    did = "did:plc:wqstj3k5tslmm246baaf3tpa";
+    rev = "71ecf8b2ebcb0a0509040fba7622205ea243627a";
+    hash = "sha256-Ku4xDZwvtGcMADQ0xrzznyHLQjEttDJTF2jzP8Yhgv8=";
   };
 
   vendorHash = "sha256-IVPACl1oWnBKGzcXvG5gzev8MwhzIKNI7zwEKJjhFc8=";
