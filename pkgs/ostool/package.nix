@@ -11,7 +11,7 @@
 }:
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "ostool";
-  version = "0.31.1";
+  version = "0.32.0";
 
   __structuredAttrs = true;
   strictDeps = true;
@@ -20,10 +20,10 @@ rustPlatform.buildRustPackage (finalAttrs: {
     owner = "drivercraft";
     repo = "ostool";
     tag = "ostool-v${finalAttrs.version}";
-    hash = "sha256-PbvANhgoMMtVlprEbmUfShfvLM0VQEVhQC4qiW97Y0M=";
+    hash = "sha256-9b9MEcfjLo7S6Owll4u/TXdJEmf644wKIKtxAmW4vA8=";
   };
 
-  cargoHash = "sha256-ws5I8QrbEYA1oMX1t5aUxIetLTFHjauJ8n807A5hSR0=";
+  cargoHash = "sha256-H0Eh+iw61A/fUQNuhqRN3gW1VyD6Gi/VccItaaThlHI=";
 
   buildAndTestSubdir = [ "ostool" ];
 
