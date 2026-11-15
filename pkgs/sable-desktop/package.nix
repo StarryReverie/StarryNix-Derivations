@@ -43,6 +43,11 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-89oe2t8POjwSDz5T5onlDYgyfaPDWzf6KvLLi8uCFUM=";
   };
 
+  outputs = [
+    "frontend"
+    "out"
+  ];
+
   cargoDeps = rustPlatform.fetchCargoVendor {
     inherit (finalAttrs) src;
     hash = "sha256-hhTjjNlAzGmniTa7r15LXaZicgKEEyLcuKkJlNsLCl0=";
@@ -111,6 +116,10 @@ stdenv.mkDerivation (finalAttrs: {
   installPhase = ''
     runHook preInstall
 
+    # Install `frontend`
+    cp -r dist $frontend
+
+    # Install `out`
     mkdir -p $out/opt/sable-desktop
     cp -r electron/release/linux*-unpacked/resources/. $out/opt/sable-desktop
     echo nix > $out/opt/sable-desktop/package-type
