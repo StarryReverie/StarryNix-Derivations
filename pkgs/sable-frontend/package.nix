@@ -14,7 +14,7 @@
   stdenv,
 }:
 stdenv.mkDerivation (finalAttrs: {
-  pname = "sable";
+  pname = "sable-frontend";
   version = "2.3.9";
 
   __structuredAttrs = true;
@@ -113,6 +113,7 @@ stdenv.mkDerivation (finalAttrs: {
     changelog = "https://git.sable.moe/SableClient/sable-next/src/tag/${finalAttrs.version}/CHANGELOG.md";
     license = lib.licenses.agpl3Plus;
     platforms = lib.platforms.all;
+    broken = stdenv.hostPlatform.isDarwin;
     maintainers = [ lib.maintainers.starryreverie ];
   };
 })
