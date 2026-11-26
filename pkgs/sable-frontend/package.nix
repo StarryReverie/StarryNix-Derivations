@@ -15,7 +15,7 @@
 }:
 stdenv.mkDerivation (finalAttrs: {
   pname = "sable-frontend";
-  version = "2.3.9";
+  version = "26.11.4";
 
   __structuredAttrs = true;
   strictDeps = true;
@@ -25,19 +25,19 @@ stdenv.mkDerivation (finalAttrs: {
     owner = "SableClient";
     repo = "sable-next";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-89oe2t8POjwSDz5T5onlDYgyfaPDWzf6KvLLi8uCFUM=";
+    hash = "sha256-dapUFACRlFqp4/QysOPgrvCy1jCd6SRm/hIiSxzIwe4=";
   };
 
   cargoDeps = rustPlatform.fetchCargoVendor {
     inherit (finalAttrs) src;
-    hash = "sha256-hhTjjNlAzGmniTa7r15LXaZicgKEEyLcuKkJlNsLCl0=";
+    hash = "sha256-50Q37gFxq2MYSCE1Ojy44+WQUtEsat2dQg/Ht6FtuTk=";
   };
 
   pnpmDeps = fetchPnpmDeps {
     inherit (finalAttrs) pname version src;
     inherit (finalAttrs.passthru) pnpm;
     fetcherVersion = 4;
-    hash = "sha256-LtOqaSAVBItWnQmnOZUXSakaIKkZnZnvqN86bhq3FjQ=";
+    hash = "sha256-CbhaU2lojoCR1AG5AEZBSHz/amFO3ewvZ1bml+gLG+0=";
   };
 
   nativeBuildInputs = [
